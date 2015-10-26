@@ -36,7 +36,7 @@ public class InternetTest {
 
     @Ignore
     @Test
-    public void elementGotVisiblerTest() {
+    public void elementGotVisiblerTest(){
 
         driver.findElement(By.linkText("Dynamic Loading")).click();
         driver.findElement(By.partialLinkText("Example 1")).click();
