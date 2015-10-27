@@ -139,6 +139,19 @@ public class InternetTest {
 
     @Test
     public void validationTest(){
+        driver.findElement(By.linkText("Form Authentication")).click();
+        String wrongLogin = "wrong_tomsmith";
+        String wrongPassword = "wrong_SuperSecretPassword!";
+        driver.findElement(By.id("username")).sendKeys(wrongLogin);
+        driver.findElement(By.id("password")).sendKeys(wrongPassword);
+        WebElement login = driver.findElement(By.cssSelector(".radius"));
+        login.click();
+
+        WebElement alertMessage = driver.findElement(By.id("flash"));
+        WebDriverWait wait = new WebDriverWait(driver,12);
+        wait.until(ExpectedConditions.visibilityOf(alertMessage));
+        Assert.assertTrue(alertMessage.isDisplayed(), "Your username is invalid!");
+
 
     }
 }
