@@ -109,6 +109,31 @@ public class InternetTest {
 
     @Test
     public void logOutTest(){
+        //login
+        driver.findElement(By.linkText("Form Authentication")).click();
+        driver.findElement(By.id("username")).sendKeys("tomsmith");
+        driver.findElement(By.id("password")).sendKeys("SuperSecretPassword!");
+
+        WebElement login = driver.findElement(By.cssSelector(".radius"));
+        login.click();
+
+        WebDriverWait wait = new WebDriverWait(driver,12);
+
+        WebElement logoutButton = driver.findElement(By.cssSelector(".icon-2x.icon-signout"));
+        wait.until(ExpectedConditions.visibilityOf(logoutButton));
+
+        Assert.assertTrue(logoutButton.isDisplayed(),"Logout button is invisible");
+
+        WebElement alertMessage = driver.findElement(By.id("flash"));
+        wait.until(ExpectedConditions.visibilityOf(alertMessage));
+        Assert.assertTrue(alertMessage.isDisplayed(), "You logged into a secure area!");
+
+        //logout
+        logoutButton.click();
+        String currentURL = driver.getCurrentUrl();
+        String expectedURL = "http://the-internet.herokuapp.com/login";
+
+        Assert.assertEquals(currentURL,expectedURL);
 
     }
 
