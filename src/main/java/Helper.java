@@ -1,6 +1,7 @@
 import org.openqa.selenium.WebElement;
 
 public class Helper {
+
     public static void check(WebElement checkbox){
         setCheckboxTo(checkbox,true);
         }

@@ -34,7 +34,7 @@ public class InternetTest {
         driver.quit();
     }
 
-    @Ignore
+
     @Test
     public void elementGotVisiblerTest(){
 
@@ -53,17 +53,25 @@ public class InternetTest {
 
     @Ignore
     @Test
-    //не доделанный
-    public void elementAppearedTest(){
+    //не доделанный (хз как) :(
+    public void elementAppearedTest() throws InterruptedException {
         driver.findElement(By.linkText("Dynamic Loading")).click();
         driver.findElement(By.partialLinkText("Example 2")).click();
         WebElement startButton = driver.findElement(By.cssSelector("#start button"));
-        WebElement finishBlock = driver.findElement(By.id("finish"));
+        WebElement finishBlock = driver.findElement(By.xpath(".//*[@id='finish']/h4"));
+        //WebElement startButton = driver.findElement(By.id("start"));
+        Assert.assertTrue(startButton.isDisplayed(), "Start button didn't disappeared");
         startButton.click();
-        Assert.assertFalse(startButton.isDisplayed(), "Start button didn't disappeared");
+        Assert.assertFalse(startButton.isDisplayed(), "Start button is still there");
+
+
         WebDriverWait wait = new WebDriverWait(driver,12);
+
+
         wait.until(ExpectedConditions.visibilityOf(finishBlock));
+
         //Thread.sleep(10000);
+
         Assert.assertTrue(finishBlock.isDisplayed(),"Finish block is invisible");
         Assert.assertEquals(finishBlock.getText(), "Hello World!");
 
@@ -94,6 +102,7 @@ public class InternetTest {
 
 
     }
+    //doesn't work
     @Test
     public void checkboxTest(){
         driver.findElement(By.linkText("Checkboxes")).click();
