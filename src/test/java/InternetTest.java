@@ -80,9 +80,13 @@ public class InternetTest {
         WebDriverWait wait = new WebDriverWait(driver,12);
 
         WebElement logoutButton = driver.findElement(By.cssSelector(".icon-2x.icon-signout"));
-        //wait.until(ExpectedConditions.visibilityOf(logoutButton));
+        wait.until(ExpectedConditions.visibilityOf(logoutButton));
 
-        Assert.assertTrue(logoutButton.isDisplayed(),"Finish block is invisible");
+        Assert.assertTrue(logoutButton.isDisplayed(),"Logout button is invisible");
+
+        WebElement alertMessage = driver.findElement(By.id("flash"));
+        wait.until(ExpectedConditions.visibilityOf(alertMessage));
+        Assert.assertTrue(alertMessage.isDisplayed(), "You logged into a secure area!");
 
         //добавить проверку что есть алерт  You logged into a secure area!
 
@@ -101,7 +105,15 @@ public class InternetTest {
 
         Assert.assertTrue(checkboxes.get(0).isSelected());
         Assert.assertFalse(checkboxes.get(1).isSelected());
+    }
 
+    @Test
+    public void logOutTest(){
+
+    }
+
+    @Test
+    public void validationTest(){
 
     }
 }
