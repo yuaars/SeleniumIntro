@@ -21,7 +21,7 @@ public class ActionsTest {
     @BeforeMethod
     public void setup(){
         driver = new ChromeDriver();
-        // на весь экран
+        // РЅР° РІРµСЃСЊ СЌРєСЂР°РЅ
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30,TimeUnit.SECONDS);
@@ -45,7 +45,7 @@ public class ActionsTest {
 
         for (int i = 80; i < 90; i++) {
 
-            //переводим символы в строку
+            //РїРµСЂРµРІРѕРґРёРј СЃРёРјРІРѕР»С‹ РІ СЃС‚СЂРѕРєСѓ
             String enteredValue = String.valueOf((char)i);
             actions.sendKeys(enteredValue).perform();
             //actions.sendKeys(Keys.CONTROL + "A").perform();
