@@ -4,6 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -90,7 +91,7 @@ public class InternetTest {
         WebElement logoutButton = driver.findElement(By.cssSelector(".icon-2x.icon-signout"));
         wait.until(ExpectedConditions.visibilityOf(logoutButton));
 
-        Assert.assertTrue(logoutButton.isDisplayed(),"Logout button is invisible");
+        Assert.assertTrue(logoutButton.isDisplayed(), "Logout button is invisible");
 
         WebElement alertMessage = driver.findElement(By.id("flash"));
         wait.until(ExpectedConditions.visibilityOf(alertMessage));
@@ -131,7 +132,7 @@ public class InternetTest {
         WebElement logoutButton = driver.findElement(By.cssSelector(".icon-2x.icon-signout"));
         wait.until(ExpectedConditions.visibilityOf(logoutButton));
 
-        Assert.assertTrue(logoutButton.isDisplayed(),"Logout button is invisible");
+        Assert.assertTrue(logoutButton.isDisplayed(), "Logout button is invisible");
 
         WebElement alertMessage = driver.findElement(By.id("flash"));
         wait.until(ExpectedConditions.visibilityOf(alertMessage));
@@ -142,12 +143,13 @@ public class InternetTest {
         String currentURL = driver.getCurrentUrl();
         String expectedURL = "http://the-internet.herokuapp.com/login";
 
-        Assert.assertEquals(currentURL,expectedURL);
+        Assert.assertEquals(currentURL, expectedURL);
 
     }
 
     @Test
-    public void validationTest(){
+    //validation test
+    public void testAuthenticationFailureWhenProvidingBadCredentials(){
         driver.findElement(By.linkText("Form Authentication")).click();
 
         String wrongLogin = "wrong_tomsmith";
@@ -166,6 +168,44 @@ public class InternetTest {
 
         Assert.assertTrue(alertMessage.isDisplayed(), "Your username is invalid!");
 
+    }
+
+    @Test
+    public void titleTyping() throws InterruptedException {
+        String pageTitle = driver.getTitle();
+        System.out.println(pageTitle);
+        Thread.sleep(5000);
+    }
+
+    @Test
+    public void dropdownTest(){
+
+        driver.findElement(By.linkText("Dropdown")).click();
+        WebElement select = driver.findElement(By.id("dropdown"));
+
+        //специальный класс для дродаунов
+        Select dropdown = new Select(select);
+
+        // options хранит все присутствующие элементы в дропдауне
+        List<WebElement> options =  dropdown.getOptions();
+
+        Assert.assertEquals(options.size(),3);
+        Assert.assertFalse(dropdown.isMultiple());
+        //первый текст по умолчанию
+        Assert.assertEquals(dropdown.getFirstSelectedOption().getText(),"Please select an option");
+
+        //проверяем первый(который по умолчанию) опшн что он disabled
+        Assert.assertEquals(options.get(0).getText(),"Please select an option");
+        Assert.assertFalse(options.get(0).isEnabled());
+
+        //проверяем второй
+        Assert.assertEquals(options.get(1).getText(),"Option 1");
+
+        //проверяем третий
+        Assert.assertEquals(options.get(2).getText(),"Option 2");
+
+        dropdown.selectByValue("1");
+        Assert.assertEquals(dropdown.getFirstSelectedOption().getText(),"Option 1");
 
     }
 }
