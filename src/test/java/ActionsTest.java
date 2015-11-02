@@ -1,7 +1,4 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -10,7 +7,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class ActionsTest {
@@ -21,9 +21,9 @@ public class ActionsTest {
     @BeforeMethod
     public void setup(){
         driver = new ChromeDriver();
-        // РЅР° РІРµСЃСЊ СЌРєСЂР°РЅ
+        // на весь экран
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(8, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30,TimeUnit.SECONDS);
         driver.manage().timeouts().setScriptTimeout(30,TimeUnit.SECONDS);
         driver.get(BASE_URL);
@@ -45,7 +45,7 @@ public class ActionsTest {
 
         for (int i = 80; i < 90; i++) {
 
-            //РїРµСЂРµРІРѕРґРёРј СЃРёРјРІРѕР»С‹ РІ СЃС‚СЂРѕРєСѓ
+            //переводим символы в строку
             String enteredValue = String.valueOf((char)i);
             actions.sendKeys(enteredValue).perform();
             //actions.sendKeys(Keys.CONTROL + "A").perform();
@@ -56,6 +56,7 @@ public class ActionsTest {
         }
     }
 
+    //only for Firefox
     @Test
     public void contextMenuTest() throws InterruptedException {
 
@@ -73,7 +74,14 @@ public class ActionsTest {
                 .sendKeys(Keys.ARROW_DOWN)
                 .sendKeys(Keys.ENTER).perform();
 
-        Thread.sleep(2000);
+        Thread.sleep(3000);
+
+        Alert alert = driver.switchTo().alert();
+
+        Assert.assertEquals(alert.getText(),"You selected a context menu");
+        alert.accept();
+        Assert.assertFalse(Helper.isAlertPresent(driver),"Alert is present");
+
     }
 
     @Test
@@ -103,5 +111,7 @@ public class ActionsTest {
         Assert.assertEquals(source.findElement(By.tagName("header")).getText(),"B");
         Assert.assertEquals(target.findElement(By.tagName("header")).getText(),"A");
     }
+
+
 
 }

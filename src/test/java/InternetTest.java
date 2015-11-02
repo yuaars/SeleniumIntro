@@ -1,8 +1,7 @@
 import jdk.nashorn.internal.ir.annotations.Ignore;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -11,6 +10,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +22,7 @@ public class InternetTest {
     @BeforeMethod
     public void setup(){
         driver = new ChromeDriver();
-        // на весь экран
+        // РЅР° РІРµСЃСЊ СЌРєСЂР°РЅ
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30,TimeUnit.SECONDS);
@@ -54,7 +54,7 @@ public class InternetTest {
 
     @Ignore
     @Test
-    //не доделанный (хз как) :(
+    //РЅРµ РґРѕРґРµР»Р°РЅРЅС‹Р№ (С…Р· РєР°Рє) :(
     public void elementAppearedTest() throws InterruptedException {
         driver.findElement(By.linkText("Dynamic Loading")).click();
         driver.findElement(By.partialLinkText("Example 2")).click();
@@ -97,7 +97,7 @@ public class InternetTest {
         wait.until(ExpectedConditions.visibilityOf(alertMessage));
         Assert.assertTrue(alertMessage.isDisplayed(), "You logged into a secure area!");
 
-        //добавить проверку что есть алерт  You logged into a secure area!
+        //РґРѕР±Р°РІРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ С‡С‚Рѕ РµСЃС‚СЊ Р°Р»РµСЂС‚  You logged into a secure area!
 
 
 
@@ -183,29 +183,163 @@ public class InternetTest {
         driver.findElement(By.linkText("Dropdown")).click();
         WebElement select = driver.findElement(By.id("dropdown"));
 
-        //специальный класс для дродаунов
+        //СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєР»Р°СЃСЃ РґР»СЏ РґСЂРѕРґР°СѓРЅРѕРІ
         Select dropdown = new Select(select);
 
-        // options хранит все присутствующие элементы в дропдауне
+        // options С…СЂР°РЅРёС‚ РІСЃРµ РїСЂРёСЃСѓС‚СЃС‚РІСѓСЋС‰РёРµ СЌР»РµРјРµРЅС‚С‹ РІ РґСЂРѕРїРґР°СѓРЅРµ
         List<WebElement> options =  dropdown.getOptions();
 
         Assert.assertEquals(options.size(),3);
         Assert.assertFalse(dropdown.isMultiple());
-        //первый текст по умолчанию
+        //РїРµСЂРІС‹Р№ С‚РµРєСЃС‚ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
         Assert.assertEquals(dropdown.getFirstSelectedOption().getText(),"Please select an option");
 
-        //проверяем первый(который по умолчанию) опшн что он disabled
+        //РїСЂРѕРІРµСЂСЏРµРј РїРµСЂРІС‹Р№(РєРѕС‚РѕСЂС‹Р№ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ) РѕРїС€РЅ С‡С‚Рѕ РѕРЅ disabled
         Assert.assertEquals(options.get(0).getText(),"Please select an option");
         Assert.assertFalse(options.get(0).isEnabled());
 
-        //проверяем второй
+        //РїСЂРѕРІРµСЂСЏРµРј РІС‚РѕСЂРѕР№
         Assert.assertEquals(options.get(1).getText(),"Option 1");
 
-        //проверяем третий
+        //РїСЂРѕРІРµСЂСЏРµРј С‚СЂРµС‚РёР№
         Assert.assertEquals(options.get(2).getText(),"Option 2");
 
         dropdown.selectByValue("1");
         Assert.assertEquals(dropdown.getFirstSelectedOption().getText(),"Option 1");
 
     }
+
+    @Test
+    public void alertTest() {
+        driver.findElement(By.linkText("JavaScript Alerts")).click();
+
+        WebElement button = driver.findElement(By.cssSelector("button[onclick='jsAlert()']"));
+        button.click();
+
+        Alert alert = driver.switchTo().alert();
+        Assert.assertEquals(alert.getText(),"I am a JS Alert");
+        alert.accept();
+
+        Assert.assertFalse(Helper.isAlertPresent(driver),"Alert is present");
+        Assert.assertEquals(driver.findElement(By.id("result")).getText(),"You successfuly clicked an alert");
+
+
+    }
+
+    @Test
+    public void confirmTest(){
+        driver.findElement(By.linkText("JavaScript Alerts")).click();
+
+        WebElement button = driver.findElement(By.cssSelector("button[onclick='jsConfirm()']"));
+        button.click();
+
+        Alert alert = driver.switchTo().alert();
+        Assert.assertEquals(alert.getText(),"I am a JS Confirm");
+        alert.accept();
+
+        Assert.assertFalse(Helper.isAlertPresent(driver),"Alert is present");
+
+        Assert.assertEquals(driver.findElement(By.id("result")).getText(),"You clicked: Ok");
+    }
+
+    @Test
+    public void promptTest() throws InterruptedException {
+        driver.findElement(By.linkText("JavaScript Alerts")).click();
+
+
+        WebElement button = driver.findElement(By.cssSelector("button[onclick='jsPrompt()']"));
+        Thread.sleep(2000);
+        button.click();
+        Alert alert = driver.switchTo().alert();
+        Assert.assertEquals(alert.getText(),"I am a JS prompt");
+        String enteredText = "Hello prompt!!!";
+        alert.sendKeys(enteredText);
+        Assert.assertEquals(driver.findElement(By.id("result")).getText(),enteredText);
+
+
+    }
+
+    @Test
+    public void tabsTest(){
+
+        /* СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ handles */
+        driver.findElement(By.linkText("Multiple Windows")).click();
+
+
+        WebElement clickHere = driver.findElement(By.cssSelector("#content a"));
+        clickHere.click();
+
+        List<String> handles = new ArrayList<String>(driver.getWindowHandles());
+        Assert.assertEquals(handles.size(),2 );
+
+        /* РЅСѓР¶РЅРѕ РїРµСЂРµРєР»СЋС‡РёС‚СЊСЃСЏ РЅР° РґСЂСѓРіРѕРµ РѕРєРЅРѕ РІСЂСѓС‡РЅСѓСЋ */
+        driver.switchTo().window(handles.get(1));
+
+        Assert.assertEquals(driver.getCurrentUrl(),"http://the-internet.herokuapp.com/windows/new");
+        Assert.assertEquals(driver.getTitle(),"New Window");
+
+        WebElement heading = driver.findElement(By.cssSelector("div.example h3"));
+        Assert.assertEquals(heading.getText(),"New Window");
+        driver.close();
+
+        Assert.assertEquals(driver.getWindowHandles().size(),1);
+        driver.switchTo().window(handles.get(0));
+        Assert.assertEquals(driver.getCurrentUrl(),"http://the-internet.herokuapp.com/windows");
+
+    }
+
+    @Test
+    public void frameTest(){
+        driver.findElement(By.linkText("Frames")).click();
+        driver.findElement(By.linkText("Nested Frames")).click();
+
+        //bottom
+        driver.switchTo().frame("frame-bottom");
+        Assert.assertEquals(driver.findElement(By.tagName("body")).getText().trim(),"BOTTOM");
+
+        //РїРѕСЃРјРѕС‚СЂРµС‚СЊ СЂР°Р·РјРµС‚РєСѓ
+        //left
+        driver.switchTo().defaultContent();
+        driver.switchTo().frame("frame-top");
+        driver.switchTo().frame("frame-left");
+        Assert.assertEquals(driver.findElement(By.tagName("body")).getText().trim(),"LEFT");
+
+        //middle
+        driver.switchTo().parentFrame();
+        //driver.switchTo().frame("frame-top");
+        driver.switchTo().frame("frame-middle");
+        Assert.assertEquals(driver.findElement(By.tagName("body")).getText().trim(),"MIDDLE");
+
+        //right
+        driver.switchTo().parentFrame();
+        //driver.switchTo().frame("frame-top");
+        driver.switchTo().frame("frame-right");
+        Assert.assertEquals(driver.findElement(By.tagName("body")).getText().trim(),"RIGHT");
+    }
+
+    @Test
+    public void iFrameTest() {
+        driver.findElement(By.linkText("Frames")).click();
+        driver.findElement(By.linkText("iFrame")).click();
+
+        //JS code goes here
+        ((JavascriptExecutor)driver).executeScript
+                ("document.getElementsByClassName('large-4')[0].setAttribute('style', 'display: none');");
+        Assert.assertFalse(driver.findElement(By.cssSelector(".large-4")).isDisplayed());
+
+
+        driver.manage().window().setSize(new Dimension(600,600));
+        WebElement listButton = driver.findElement(By.cssSelector("#mceu_9>button"));
+        listButton.click();
+
+        driver.switchTo().frame("mce_0_ifr");
+
+
+
+        Actions actions = new Actions(driver);
+        actions.sendKeys("Text");
+
+
+    }
 }
+
